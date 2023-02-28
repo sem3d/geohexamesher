@@ -32,8 +32,8 @@ pd.set_option('display.max_colwidth', None)
 # Define Parameters
 MASTER = '2015-04-03'
 WORKDIR = 'raw_stack'
-DATADIR = '/home/kltpk89/Data/Filippo/gmtsar/tests/raw_orig'
-DEMFILE = '/home/kltpk89/Data/Filippo/gmtsar/tests/topo/dem.grd'
+DATADIR = '/Users/LAC/Codes/PipoGeoHex/raw_orig'
+DEMFILE = '/Users/LAC/Codes/PipoGeoHex/topo/dem.grd'
 BASEDAYS = 100
 BASEMETERS = 150
 DEFOMAX = 0
@@ -73,3 +73,5 @@ mesh = pv.StructuredGrid(xx, yy, zz)
 
 mesh["Elevation"] = zz.ravel(order="F")
 mesh.plot(show_edges=True, lighting=False)
+
+mesh.save('obj.vtk')
