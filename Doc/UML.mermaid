@@ -1,0 +1,55 @@
+classDiagram
+    MeshClass <|-- InputLayerClass
+    MeshClass <|-- ElementClass
+    MeshClass <|-- GMTSARClass
+    MeshClass <|-- PolyCubeClass
+    ElementClass <|-- NodeClass
+
+    MeshClass : +double Coords
+    MeshClass : +InputLayerClass Inputs
+    MeshClass : +ElementClass Elements
+    MeshClass : +GMTSARClass GTM
+    MeshClass : +PolyCubeClass PolyCube
+
+    MeshClass : SaveH5()
+    MeshClass : BuildMesh()
+    MeshClass : AddPML()
+    
+    class InputClass{
+      +int [LatInit,LatInit,LatInit,LatInit]
+      +double [Elx,Ely] 
+      +double [M1,M2,...]
+      ReadConfigFile()
+    }
+
+    class ElementClass{
+      +int x,y,z,,id
+      AddElement()
+      BuildMesh()
+    }
+    
+    class NodeClass{
+      +int x,y,z,id
+      AddNode()
+    } 
+
+    class GMTSARClass {
+        +double STLMesh -generate one for each semantic mesh
+        GetTopo()
+        GetBathy()
+        GetCoastLines()
+        MergeInfo()
+        SaveSTL()
+    }
+
+    class PolyCubeClass {
+        GetIntefepectElements() - Here it forms the polycube
+        MakeTetMesh() - here we build the tetmesh and add label to the surfaces... 
+        MapMesh() - evaluate the minimisation of the energy...
+    }
+
+    
+   
+    
+    
+    
