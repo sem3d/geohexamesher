@@ -13,9 +13,13 @@ class InputClass:
         #  @var Elxy Attribute size of the elements in x and y for the most refined layer
 
         self.Lim = []
-        self.Elz = []
-        self.Elxy = []
-        self.ZMax = []
+        self.PropertyModel = ''
+        self.DEMModel = ''
+        self.AddWater = 0        
+        self.MaxFrequency = -1
+        self.NelPerWavelength = -1
+        self.Depth = -1
+        self.WorkDir = ''
 
     def ReadConfigFile(self,filename):
     ## Read input file and assign to obj
@@ -23,32 +27,46 @@ class InputClass:
         with open(filename, 'r') as f:
             for line in f:
                 if not line.startswith('#'):
+                    line = line.split('#')[0].strip()
                     name, value = line.split(':')
                     name = name.strip()
                     value = value.split()
                     
                     if name == 'Lim':
                         self.Lim = [float(x) for x in value]
-                    elif name == 'Elz':
-                        self.Elz = [float(x) for x in value]
-                    elif name == 'Elxy':
-                        self.Elxy = [float(x) for x in value]
-                    elif name == 'ZMax':
-                        self.ZMax = [float(x) for x in value]
+                    elif name == 'PropertyModel':
+                        self.PropertyModel  = str(value[0])
+                    elif name == 'DEMModel':
+                        self.DEMModel = str(value[0])
+                    elif name == 'AddWater':
+                        if int(value[0]) == 0:
+                            self.AddWater = False
+                        else:
+                            self.AddWater = True
+                    elif name == 'MaxFrequency':
+                        self.MaxFrequency = float(value[0])
+                    elif name == 'NelPerWavelength':
+                        self.NelPerWavelength = int(value[0])
+                    elif name == 'Depth':
+                        self.Depth = float(value[0])
+                    elif name == 'WorkDir':
+                        self.WorkDir = str(value[0])
+
         self.validate_values()
     
+    #TODO: add the validations
     def validate_values(self):
         ## Validate the inputs.
         assert len(self.Lim) == 4, f'Error: Lim must have 4 values. Got {len(self.Lim)}'
-        assert len(self.Elz) >= 1, f'Error: Elz must have at least 1 value. Got {len(self.Elz)}'
-        assert len(self.Elxy) == 2, f'Error: Elxy must have 2 values. Got {len(self.Elxy)}'
-        assert len(self.Elz) == len(self.ZMax), f'Error: the number of layers in Z and the size of elements do no have the same size, please check the config file'
+
     
     def __str__(self):
         ## Replace print method
-        print('The Input is:')
-        print('Lim:',  self.Lim)
-        print('Elz:',  self.Elz)
-        print('Elxy:', self.Elxy)
-        print('ZMax:', self.ZMax)
-        return None
+        return (f"Lim: {self.Lim}\n"
+                f"PropertyModel: {self.PropertyModel}\n"
+                f"DEMModel: {self.DEMModel}\n"
+                f"AddWater: {self.AddWater}\n"
+                f"MaxFrequency: {self.MaxFrequency}\n"
+                f"NelPerWavelength: {self.NelPerWavelength}\n"
+                f"Depth: {self.Depth}\n"
+                f"WorkDir: {self.WorkDir}")
