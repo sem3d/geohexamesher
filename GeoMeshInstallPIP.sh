@@ -12,6 +12,9 @@ python -m pip install hvplot
 python -m pip install wheel
 python -m pip install setuptools
 python -m pip install twine
+python -m pip install netcdf4
+python -m pip install pydap
+python -m pip install rockhound
 python -m pip uninstall geohexamesher
 python setup.py bdist_wheel
 pip install dist/geohexamesher-1-py3-none-any.whl
