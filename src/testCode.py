@@ -26,3 +26,5 @@ I.ReadConfigFile('config.txt')
 
 print(I)
 D.GetMaterialProperty(I,2)
+D.GetDEMModel(I,2)
+D.GetCoastLines(I,2)

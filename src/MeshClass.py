@@ -31,11 +31,14 @@ class MeshClass:
         return None
     
     def BuildMesh(self):
+        # Build mesh method. It re
+
         #1 - get the topo, bathy, coastline info
-        self.GTM.GetTopo(self.Inputs.Lim)
-        self.GTM.GetBathy(self.Inputs.Lim)
-        self.GTM.GetCoastLines(self.Inputs.Lim)
-        self.GTM.MergeInfo
+        self.GTM.GetSurfaces(self.Inputs.Lim)
+        #self.GTM.GetTopo(self.Inputs.Lim)
+        #self.GTM.GetBathy(self.Inputs.Lim)
+        #self.GTM.GetCoastLines(self.Inputs.Lim)
+        #self.GTM.MergeInfo
         #debug propose
         self.GTM.SaveSTL('DebugMesh.stl')
         
