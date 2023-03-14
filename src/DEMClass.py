@@ -49,10 +49,10 @@ class DEMClass:
                 l[i,2] = lim[2]
                 l[i,3] = lim[3]
             #print(l.shape)
-            df['LatMin'] = l[:,0]
-            df['LatMax'] = l[:,1]
-            df['LonMin'] = l[:,2]
-            df['LonMax'] = l[:,3]
+            df['LonMin'] = l[:,0]
+            df['LonMax'] = l[:,1]
+            df['LatMin'] = l[:,2]
+            df['LatMax'] = l[:,3]
             #print(df)
             if OutType == 0:
                 # Save the DataFrame in HDF5 format
@@ -91,9 +91,9 @@ class DEMClass:
                 import requests, zipfile, io
                 print("This operation can take several hours")
                 zipurl = 'https://www.bodc.ac.uk/data/open_download/gebco/gebco_2022_sub_ice_topo/zip/'
-                #r = requests.get(zipurl)
-                #z = zipfile.ZipFile(io.BytesIO(r.content))
-                #z.extractall(path)
+                r = requests.get(zipurl)
+                z = zipfile.ZipFile(io.BytesIO(r.content))
+                z.extractall(path)
             else:
                 #do nothing
                 print("The files has been found in your computer")
@@ -102,7 +102,7 @@ class DEMClass:
             ds = xr.open_dataset(filepath)
 
             # Set the limits of the plot
-            minlon, maxlon, minlat, maxlat = lim[2], lim[3], lim[0], lim[1]
+            minlon, maxlon, minlat, maxlat = lim[0], lim[1], lim[2], lim[3]
             subset = ds.sel(lon=slice(minlon,maxlon))
             subset = subset.sel(lat=slice(minlat, maxlat))
 
@@ -110,18 +110,28 @@ class DEMClass:
             lon = subset.lon.values
             lat = subset.lat.values
             depth = subset.elevation.values
-            depth = depth.transpose() 
+            
             # Create the plot
-            #import matplotlib.pyplot as plt
-            #fig, ax = plt.subplots(figsize=(8,8))
-            #im = ax.imshow(depth, extent=(lon.min(), lon.max(), lat.min(), lat.max()), cmap='coolwarm')
-            #cbar = plt.colorbar(im, ax=ax, shrink=0.7)
-            #cbar.set_label('Depth (m)')
-            #ax.set_xlabel('Longitude')
-            #ax.set_ylabel('Latitude')
-            #ax.set_title('GEBCO Bathymetry')
-            #plt.show()
+            import matplotlib.pyplot as plt
+            # Mask out the negative values
+            bathymetry_masked = np.ma.masked_less_equal(depth, 0)
 
+            # Plot the masked bathymetry data
+            plt.imshow(bathymetry_masked, cmap='viridis', extent=[np.min(lon), np.max(lon), np.min(lat), np.max(lat)], origin='lower')
+            plt.colorbar()
+            plt.show()
+
+
+            '''
+            fig, ax = plt.subplots(figsize=(8,8))
+            im = ax.imshow(depth, extent=(lon.min(), lon.max(), lat.min(), lat.max()), cmap='coolwarm')
+            cbar = plt.colorbar(im, ax=ax, shrink=0.7)
+            cbar.set_label('Depth (m)')
+            ax.set_xlabel('Longitude')
+            ax.set_ylabel('Latitude')
+            ax.set_title('GEBCO Bathymetry')
+            plt.show()
+            '''
         elif DEMModel == "ETOPO1":
             pass
         elif DEMModel == "ETOPO2":
@@ -140,9 +150,9 @@ class DEMClass:
         outZ   = pd.DataFrame({'z':depth.flatten()})
         #vtkName = path+os.path.sep+"DEMModel.vtk"
         #self.SaveVTK(lat,lon,depth,vtkName)
-        stlName = path+os.path.sep+"DEMModel.stl"
-        self.SaveSTL(lat,lon,depth,stlName)
-        #print(df)
+        #stlName = path+os.path.sep+"DEMModel.stl"
+        #self.SaveSTL(lat,lon,depth,stlName)
+       # print(df)
         if OutType == 0:
             # Save the DataFrame in HDF5 format
             h5filename = path+os.path.sep+"DEM.h5"
@@ -205,8 +215,8 @@ class DEMClass:
         df = pd.DataFrame(coords, columns=['lon', 'lat'])
 
         # Filter between latitudes and longitudes 
-        lat_min, lat_max = lim[0], lim[1]
-        lon_min, lon_max = lim[2], lim[3]
+        lat_min, lat_max = lim[2], lim[3]
+        lon_min, lon_max = lim[0], lim[1]
 
         df_filtered = df[(df['lat'] >= lat_min) & (df['lat'] <= lat_max) & (df['lon'] >= lon_min) & (df['lon'] <= lon_max)]
 
@@ -231,7 +241,7 @@ class DEMClass:
         import numpy as np
         import matplotlib as plt
         import matplotlib.pyplot as plt
-
+        '''
         # Create the plot
         fig, ax = plt.subplots(figsize=(8,8))
         im = ax.imshow(z, extent=(x.min(), x.max(), y.min(), y.max()), cmap='coolwarm')
@@ -242,14 +252,14 @@ class DEMClass:
         ax.set_title('GEBCO Bathymetry')
 
         plt.show()
-
+        '''
         # Create a surface mesh
         X, Y = np.meshgrid(x,y)
-        print(x.shape)
-        print(y.shape)
-        print(z.shape)
-        print(X.shape)
-        print(Y.shape)
+        #print(x.shape)
+        #print(y.shape)
+        #print(z.shape)
+        #print(X.shape)
+        #print(Y.shape)
         mesh = pv.StructuredGrid(X, Y, z)
         plotter = pv.Plotter()
         plotter.add_mesh(mesh, color="white")
@@ -276,7 +286,7 @@ class DEMClass:
         for i in range(0,len(x)):
             for j in range(0,len(y)):
                 points[count,:] = [x[i],y[j]] 
-                zz[count] = z[j,i] 
+                zz[count] = z[i,j] 
                 count = count + 1
         #points = np.array([[0, 0], [0, 1.1], [1, 0], [1, 1]])
         #z = np.sin(np.sqrt(x**2 + y**2))
@@ -285,20 +295,20 @@ class DEMClass:
         from scipy.spatial import Delaunay
         points = np.column_stack([points[:,0], points[:,1], z])
         tri = Delaunay(points[:,:2])
-        aux = tri.vertices.shape
-        print(aux)
-        print(tri)
-        print(tri.simplices)
+        #aux = tri.vertices.shape
+        #print(aux)
+        #print(tri)
+        #print(tri.simplices)
         from stl import mesh
         faces = tri.simplices
-        cube = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
+        mesh = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
         for i, f in enumerate(faces):
             for j in range(3):
-                cube.vectors[i][j] = points[f[j],:]
+                mesh.vectors[i][j] = points[f[j],:]
 
-        # Write the mesh to file "cube.stl"
-        cube.save(stlName)
-
+        # Write the mesh to file
+        mesh.save(stlName)
+        return mesh
 
         '''
         # Extract the simplices (triangles) from the Delaunay triangulation

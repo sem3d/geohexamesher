@@ -16,6 +16,7 @@ python -m pip install netcdf4
 python -m pip install pydap
 python -m pip install rockhound
 python -m pip install tables
+python -m pip install numpy-stl
 python -m pip uninstall geohexamesher
 python setup.py bdist_wheel
 pip install dist/geohexamesher-1-py3-none-any.whl

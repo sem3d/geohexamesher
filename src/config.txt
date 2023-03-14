@@ -1,5 +1,5 @@
-#Lat begin Lat end and Lon begin Lon end 
-Lim : 22.5 23.0 5.8 7
+#Lon begin Lon end and Lat begin Lat end 
+Lim : 20 21 38 39
 PropertyModel : PREM #PREM
 DEMModel : GEBCO
 AddWater : 0 # 0 do not add water 1 add water
